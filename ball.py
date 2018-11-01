@@ -2,17 +2,16 @@ class Ball:
     def __init__(self, strength, pos_x, pos_y):
         self.x = pos_x
         self.y = pos_y
-        self.strength = strength
-        
-        self.time = -100
+        self.y_vel = strength/10.0
+        self.strength = strength/8.0
         
     def tick(self):
-        self.time += (1/10.0) * self.strength/10
-        self.y = 0.5 * self.time * self.time
-        self.x = -self.time
+        self.x -= self.strength
+        self.y_vel -= 9.82/50.0
+        self.y += self.y_vel
         
     def getX(self):
-        return self.x + 600
+        return self.x
     
     def getY(self):
-        return self.y + 50
+        return self.y

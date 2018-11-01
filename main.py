@@ -3,7 +3,6 @@ import math
 from random import randint
 from game import Game
 
-
 screen_width = 800
 screen_height = 600
 
@@ -15,16 +14,23 @@ def draw_game():
         pygame.draw.rect(screen, (30,30,30), pygame.Rect(380, cnvtY(280), 80, 50))
         screen.blit(myfont.render("MENU", 1, (255,255,255)), (400, cnvtY(300)))
     elif game.state == 1:
+        def loadXTranslate(x):
+            return x + game.x * (-1) + screen_width/2.0
         #Game
         screen.fill((0,10,20))
         #Player
-        pygame.draw.rect(screen, (10,123,50), pygame.Rect(game.x, cnvtY(game.y), 50, 50))
+        pygame.draw.rect(screen, (10,123,50), pygame.Rect(loadXTranslate(game.x), cnvtY(game.y), 50, 50))
         #Catapult and balls
-        pygame.draw.rect(screen, (123,50,10), pygame.Rect(game.catapult[0], cnvtY(game.catapult[1]), 50, 50))
+        pygame.draw.rect(screen, (123,50,10), pygame.Rect(loadXTranslate(game.catapult[0]), cnvtY(game.catapult[1]), 50, 50))
+        pygame.draw.rect(screen, (255, 0, 0), pygame.Rect(loadXTranslate(game.catapult[0]), cnvtY(game.catapult[1]), game.catapultProgress, 50))
         for ball in game.balls:
-            pygame.draw.ellipse(screen, (10,123,50), pygame.Rect(ball.getX(), cnvtY(ball.getY()), 10, 10))
-        
+            pygame.draw.ellipse(screen, (10,123,50), pygame.Rect(loadXTranslate(ball.getX()), cnvtY(ball.getY()), 10, 10))
+        for enemy in game.enemies:
+            pygame.draw.rect(screen, (255, 0, 0), pygame.Rect(loadXTranslate(enemy.getX()), cnvtY(enemy.getY()), 50, 50))
         screen.blit(myfont.render("Points: {}".format(game.points), 1, (255,255,0)), (100, cnvtY(500)))
+        
+        #Background
+        pygame.draw.line(screen, (255), (0, cnvtY(50)), (screen_width, cnvtY(50)))
     elif game.state == 2:
         #Pause
         pygame.draw.rect(screen, (30,30,30), pygame.Rect(380, cnvtY(280), 80, 50))

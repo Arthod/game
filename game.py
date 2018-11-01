@@ -2,6 +2,7 @@ import math
 import pygame
 from random import randint
 from ball import Ball
+from enemy import Enemy
 
 class Game:
     def __init__(self):
@@ -19,8 +20,10 @@ class Game:
         self.points = 0
         self.y_ground = 100
         self.catapult = [600, self.y_ground]
+        self.catapultProgress = 0
 
         self.balls = []
+        self.enemies = []
         
         self.grav_acc = 9.82
             
@@ -28,6 +31,8 @@ class Game:
     def tick(self, pg, pressed):
         def fire_catapult(strength, x, y):
             self.balls.append(Ball(strength, x, y))
+        def spawn_enemy(x, y, health):
+            self.enemies.append(Enemy(x, y, health))
             
         def collision(x0, y0, x1, y1):
             if abs(x0 - x1) > 50:
@@ -42,6 +47,9 @@ class Game:
             elif self.y_vel < 0:
                 self.y_vel = 0
                 self.y = self.y_ground
+            
+            if pressed[pg.K_UP]:
+                spawn_enemy(self.x, self.y, 50)
                 
             if pressed[pg.K_UP] and self.y <= self.y_ground:
                 self.y_vel += 6
@@ -60,10 +68,27 @@ class Game:
             self.y += self.y_vel
             
             #Catapult and balls
-            if (self.y == self.y_ground and pressed[pg.K_DOWN] and collision(self.x, self.y, self.catapult[0], self.catapult[1])):
-                fire_catapult(50, self.x, self.y)
-            for ball in self.balls:
-                ball.tick()
+            if (self.y == self.y_ground and pressed[pg.K_DOWN] and collision(self.x, self.y, self.catapult[0], self.catapult[1]) and self.catapultProgress < 50):
+                self.catapultProgress += 1
+            if (self.catapultProgress > 0) and (not pressed[pg.K_DOWN] or not collision(self.x, self.y, self.catapult[0], self.catapult[1])):
+                fire_catapult(self.catapultProgress, self.catapult[0], self.catapult[1])
+                self.catapultProgress = 0
+            
+            ii = 0
+            for i in range(len(self.balls)):
+                self.balls[ii].tick()
+                if(self.balls[ii].y < 50):
+                    self.balls.pop(ii)
+                    ii -= 1
+                ii += 1
+            ii = 0
+            for i in range(len(self.enemies)):
+                self.enemies[ii].tick()
+                if(self.enemies[ii].y < 50):
+                    self.enemies.pop(ii)
+                    ii -= 1
+                ii += 1
+                
 
             #if math.sqrt((self.target[0] - self.x)**2 + (self.target[1] - self.y)**2) < 40:
             #    self.points += 1
