@@ -1,8 +1,8 @@
 import math
 import pygame
 from random import randint
-from ball import Ball
 from enemy import Enemy
+from catapult import Catapult
 
 class Game:
     def __init__(self):
@@ -10,7 +10,7 @@ class Game:
         #State 0: Menu
         #State 1: Game
         #State 2: Pause
-        self.x = 400
+        self.x = 0
         self.y = 250
         
         self.y_vel = 0
@@ -19,18 +19,14 @@ class Game:
         
         self.points = 0
         self.y_ground = 100
-        self.catapult = [[100, self.y_ground], [700, self.y_ground]]
-        self.catapultProgress = [0, 0]
-
-        self.balls = []
+        
+        self.catapult = [Catapult(-300, self.y_ground, 0, 1), Catapult(300, self.y_ground, 0, -1)]
         self.enemies = []
         
         self.grav_acc = 9.82
             
 
     def tick(self, pg, pressed):
-        def fire_catapult(strength, x, y, xdir):
-            self.balls.append(Ball(strength, x, y, xdir))
         def spawn_enemy(x, y, health):
             self.enemies.append(Enemy(x, y, health))
             
@@ -69,34 +65,28 @@ class Game:
             
             #Catapult and balls
             for i in range(len(self.catapult)):
-                if (self.y == self.y_ground and pressed[pg.K_DOWN] and collision(self.x, self.y, self.catapult[i][0], self.catapult[i][1]) and self.catapultProgress[i] < 50):
-                    self.catapultProgress[i] += 1
-                if (self.catapultProgress[i] > 0) and (not pressed[pg.K_DOWN] or not collision(self.x, self.y, self.catapult[i][0], self.catapult[i][1])):
-                    if i == 0:
-                        fire_catapult(self.catapultProgress[i], self.catapult[i][0], self.catapult[i][1], 1)
-                    else:
-                        fire_catapult(self.catapultProgress[i], self.catapult[i][0], self.catapult[i][1], -1)
-                    self.catapultProgress[i] = 0
-            
-            ii = 0
-            for i in range(len(self.balls)):
-                self.balls[ii].tick()
-                if(self.balls[ii].y < 50):
-                    self.balls.pop(ii)
-                    ii -= 1
-                ii += 1
+                cata = self.catapult[i]
+                self.catapult[i].tick()
+                if (self.y == cata.getY() and pressed[pg.K_DOWN] and collision(self.x, self.y, cata.getX(), cata.getY()) and cata.get_progress() < 50):
+                    cata.progress += 1
+                if (cata.get_progress() > 0) and (not pressed[pg.K_DOWN] or not collision(self.x, self.y, cata.getX(), cata.getY())):
+                    cata.fire_catapult(cata.get_progress(), cata.getX(), cata.getY(), cata.get_xdir())
+                    cata.progress = 0
                 
             ii = 0
             for i in range(len(self.enemies)):
                 self.enemies[ii].tick()
-                jj = 0
-                for j in range(len(self.balls)):
-                    if (collision(self.enemies[ii].getX(), self.enemies[ii].getY(), self.balls[jj].getX(), self.balls[jj].getY())):
-                        self.balls.pop(jj)
-                        self.enemies.pop(ii)
-                        ii -= 1
-                        jj -= 1
-                    jj += 1
+                for j in range(len(self.catapult)):
+                    kk = 0
+                    for k in range(len(self.catapult[j].balls)):
+                        if (collision(self.enemies[ii].getX(), self.enemies[ii].getY(), self.catapult[j].balls[kk].getX(), self.catapult[j].balls[kk].getY())):
+                            self.catapult[j].balls.pop(kk)
+                            self.enemies[ii].health -= 25
+                            if self.enemies[ii].get_health() <= 0:
+                                self.enemies.pop(ii)
+                                ii -= 1
+                            kk -= 1
+                        kk += 1
                 ii += 1
                 
     def start_game(self):

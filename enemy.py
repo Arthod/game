@@ -4,6 +4,7 @@ class Enemy:
         self.y = pos_y
         self.x_vel = 1
         self.health = health
+        self.max_health = health
         
     def tick(self):
         self.x += self.x_vel
@@ -13,3 +14,9 @@ class Enemy:
     
     def getY(self):
         return self.y
+    
+    def get_health(self):
+        return self.health
+    
+    def get_start_health(self):
+        return self.max_health

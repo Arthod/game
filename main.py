@@ -16,24 +16,35 @@ def draw_game():
     elif game.state == 1:
         def loadXTranslate(x):
             return x + game.x * (-1) + screen_width/2.0
-        #Game
-        screen.fill((0,10,20))
-        #Player
-        pygame.draw.rect(screen, (10,123,50), pygame.Rect(loadXTranslate(game.x), cnvtY(game.y), 50, 50))
-        #Catapult and balls
+        def draw_rect(color, x, y, w, h):
+            pygame.draw.rect(screen, color, pygame.Rect(loadXTranslate(x) - w/2.0, cnvtY(y), w, h))
+        def draw_gui_rect(color, x, y, w, h):
+            pygame.draw.rect(screen, color, pygame.Rect(loadXTranslate(x - 25), cnvtY(y), w, h))
+        def draw_ellipse(color, x, y, w, h):
+            pygame.draw.ellipse(screen, color, pygame.Rect(loadXTranslate(x), cnvtY(y), w, h))
+        #Background
+        screen.fill((135,206,235))
+        #Capital
+        draw_rect((52,37, 26), 0, 200, 200, screen_height-600+150)
+        #Catapults and balls
         for i in range(len(game.catapult)):
-            pygame.draw.rect(screen, (123,50,10), pygame.Rect(loadXTranslate(game.catapult[i][0]), cnvtY(game.catapult[i][1]), 50, 50))
-            pygame.draw.rect(screen, (255, 0, 0), pygame.Rect(loadXTranslate(game.catapult[i][0]), cnvtY(game.catapult[i][1]), game.catapultProgress[i], 50))
-        for ball in game.balls:
-            pygame.draw.ellipse(screen, (10,123,50), pygame.Rect(loadXTranslate(ball.getX()), cnvtY(ball.getY()), 10, 10))
+            draw_rect((123,50,10), game.catapult[i].getX(), game.catapult[i].getY(), 50, 50)
+            draw_rect((255, 0, 0), game.catapult[i].getX(), game.catapult[i].getY(), game.catapult[i].get_progress(), 50)
+            for ball in game.catapult[i].balls:
+                draw_ellipse((10,123,50), ball.getX(), ball.getY(), 10, 10)
+        #Enemies
         for enemy in game.enemies:
-            pygame.draw.rect(screen, (255, 0, 0), pygame.Rect(loadXTranslate(enemy.getX()), cnvtY(enemy.getY()), 50, 50))
+            draw_rect((255, 0, 0), enemy.getX(), enemy.getY(), 50, 50)
+            draw_gui_rect((60, 180, 0), enemy.getX(), enemy.getY() + 30, (enemy.get_health()/enemy.get_start_health())*50, 15)
         #text
         screen.blit(myfont.render("Points: {}".format(game.points), 1, (255,255,0)), (50, cnvtY(550)))
         screen.blit(myfont.render("Enemies: {}".format(game.get_enemies_amount()), 1, (255,255,0)), (50, cnvtY(525)))
         
-        #Background
-        pygame.draw.line(screen, (255), (0, cnvtY(50)), (screen_width, cnvtY(50)))
+        #Ground
+        #pygame.draw.line(screen, (255), (0, cnvtY(50)), (screen_width, cnvtY(50)))
+        draw_gui_rect((0, 255, 60), -5000, 50, 10000, 50)
+        #Player
+        draw_rect((10,123,50), game.x, game.y, 50, 50)
     elif game.state == 2:
         #Pause
         pygame.draw.rect(screen, (30,30,30), pygame.Rect(380, cnvtY(280), 80, 50))
