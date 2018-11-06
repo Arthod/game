@@ -9,6 +9,8 @@ screen_height = 600
 def draw_game():
     def cnvtY(n): #Convert from cartesian form to python form
         return n * -1 + screen_height
+    
+    
     if game.state == 0:
         #Menu
         pygame.draw.rect(screen, (30,30,30), pygame.Rect(380, cnvtY(280), 80, 50))
@@ -21,7 +23,8 @@ def draw_game():
         def draw_gui_rect(color, x, y, w, h):
             pygame.draw.rect(screen, color, pygame.Rect(loadXTranslate(x - 25), cnvtY(y), w, h))
         def draw_ellipse(color, x, y, w, h):
-            pygame.draw.ellipse(screen, color, pygame.Rect(loadXTranslate(x), cnvtY(y), w, h))
+            pygame.draw.ellipse(screen, color, pygame.Rect(loadXTranslate(x) - w/2.0, cnvtY(y), w, h))
+            
         #Background
         screen.fill((135,206,235))
         #Capital
@@ -34,11 +37,17 @@ def draw_game():
                 draw_ellipse((10,123,50), ball.getX(), ball.getY(), 10, 10)
         #Enemies
         for enemy in game.enemies:
-            draw_rect((255, 0, 0), enemy.getX(), enemy.getY(), 50, 50)
-            draw_gui_rect((60, 180, 0), enemy.getX(), enemy.getY() + 30, (enemy.get_health()/enemy.get_start_health())*50, 15)
+            draw_rect((255, 0, 0), enemy.getX(), enemy.getY(), 50, 50) #50, 50
+            draw_gui_rect((60, 180, 0), enemy.getX(), enemy.getY() + 30, (enemy.get_health()/enemy.get_start_health())*50, 15) #*50, 15
+            
+        #Wall
+        for wall in game.walls:
+            draw_rect((255, 0, 0), wall.getX(), wall.getY(), 50, 50)
+            
         #text
         screen.blit(myfont.render("Points: {}".format(game.points), 1, (255,255,0)), (50, cnvtY(550)))
         screen.blit(myfont.render("Enemies: {}".format(game.get_enemies_amount()), 1, (255,255,0)), (50, cnvtY(525)))
+        screen.blit(myfont.render("Wave: {}".format(game.get_wave_number()), 1, (255, 255,0)), (50, cnvtY(500)))
         
         #Ground
         #pygame.draw.line(screen, (255), (0, cnvtY(50)), (screen_width, cnvtY(50)))

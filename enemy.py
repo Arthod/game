@@ -20,3 +20,6 @@ class Enemy:
     
     def get_start_health(self):
         return self.max_health
+    
+    def update_health(self, diff_health):
+        self.health += diff_health
