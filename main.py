@@ -8,7 +8,7 @@ screen_height = 600
 
 def draw_game():
     def cnvtY(n): #Convert from cartesian form to python form
-        return n * -1 + screen_height
+        return -n + screen_height
     
     
     if game.state == 0:
@@ -20,10 +20,13 @@ def draw_game():
             return x + game.x * (-1) + screen_width/2.0
         def draw_rect(color, x, y, w, h):
             pygame.draw.rect(screen, color, pygame.Rect(loadXTranslate(x) - w/2.0, cnvtY(y), w, h))
+            pygame.draw.rect(screen, (0, 0, 0), pygame.Rect(loadXTranslate(x), cnvtY(y), 5, 5))
         def draw_gui_rect(color, x, y, w, h):
             pygame.draw.rect(screen, color, pygame.Rect(loadXTranslate(x - 25), cnvtY(y), w, h))
         def draw_ellipse(color, x, y, w, h):
             pygame.draw.ellipse(screen, color, pygame.Rect(loadXTranslate(x) - w/2.0, cnvtY(y), w, h))
+            pygame.draw.rect(screen, (0, 0, 0), pygame.Rect(loadXTranslate(x), cnvtY(y), 5, 5))
+
             
         #Background
         screen.fill((135,206,235))
@@ -42,7 +45,7 @@ def draw_game():
             
         #Wall
         for wall in game.walls:
-            draw_rect((255, 0, 0), wall.getX(), wall.getY(), 50, 50)
+            draw_rect((255, 0, 0), wall.getX(), wall.getY() - 20, 16, 30)
             
         #text
         screen.blit(myfont.render("Points: {}".format(game.points), 1, (255,255,0)), (50, cnvtY(550)))

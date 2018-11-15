@@ -37,10 +37,15 @@ class Game:
             self.walls.append(Wall(x, y, health))
             
         def collision(x0, y0, w0, h0, x1, y1, w1, h1):
-            if abs((x0 + w0/2.0) - (x1 + w1/2.0)) > (w0+w1) / 2.0:
-                return False
-            else:
+            if (math.sqrt((x0 - x1)**2 + ((y0 + h0/2.0) - (y1 + h1/2.0))**2) < w0/2.0 + w1/2.0):
                 return True
+            else:
+                return False
+        def ball_collision(ballx, bally, x, y, w, h):
+            if x + w/2.0 > ballx > x - w/2.0 and bally < y:
+                return True
+            else:
+                return False
             
         if self.state == 1:
             #Movement
@@ -93,18 +98,19 @@ class Game:
                 for j in range(len(self.catapult)):
                     kk = 0
                     for k in range(len(self.catapult[j].balls)):
-                        if (collision(self.enemies[ii].getX(), self.enemies[ii].getY(), 50, 50, self.catapult[j].balls[kk].getX(), self.catapult[j].balls[kk].getY(), 10, 10)):
+                        if (ball_collision(self.catapult[j].balls[kk].getX(), self.catapult[j].balls[kk].getY(), self.enemies[ii].getX(), self.enemies[ii].getY(), 50, 50)):
                             self.catapult[j].balls.pop(kk)
                             kk -= 1
                             self.enemies[ii].update_health(-25)
                         kk += 1
                 ii += 1
         
+        
         #Waves
         def next_wave():
             self.wave_number += 1
             for i in range(self.wave_number):
-                spawn_enemy(-700 + randint(-50, 50), 100, 50)
+                spawn_enemy(-500 + randint(-50, 50), 100, 50)
         if (len(self.enemies)) == 0:
             next_wave()
         
