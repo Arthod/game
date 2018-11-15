@@ -45,7 +45,8 @@ def draw_game():
             
         #Wall
         for wall in game.walls:
-            draw_rect((255, 0, 0), wall.getX(), wall.getY() - 20, 16, 30)
+            draw_rect((0, 0, 0), wall.getX(), wall.getY() - 20, 16, 30)
+            draw_rect((20, 180, 60), wall.getX(), wall.getY() - 20, 16, (wall.get_health()/100.0) * 30)
             
         #text
         screen.blit(myfont.render("Points: {}".format(game.points), 1, (255,255,0)), (50, cnvtY(550)))

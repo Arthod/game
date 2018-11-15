@@ -24,7 +24,7 @@ class Game:
         
         self.catapult = [Catapult(-300, self.y_ground, 0, 1), Catapult(300, self.y_ground, 0, -1)]
         self.enemies = []
-        self.walls = []
+        self.walls = [Wall(-360, self.y_ground, 100), Wall(360, self.y_ground, 100)]
         
         self.grav_acc = 9.82
         self.wave_number = 0
@@ -76,19 +76,16 @@ class Game:
             for i in range(len(self.catapult)):
                 cata = self.catapult[i]
                 self.catapult[i].tick()
-                if (self.y == cata.getY() and pressed[pg.K_DOWN] and collision(self.x, self.y, 50, 50, cata.getX(), cata.getY(), 50, 50) and cata.get_progress() < 50):
+                if (self.y == cata.getY() and pressed[pg.K_SPACE] and collision(self.x, self.y, 50, 50, cata.getX(), cata.getY(), 50, 50) and cata.get_progress() < 50):
                     cata.progress += 1
-                if (cata.get_progress() > 0) and (not pressed[pg.K_DOWN] or not collision(self.x, self.y, 50, 50, cata.getX(), cata.getY(), 50, 50)):
+                if (cata.get_progress() > 0) and (not pressed[pg.K_SPACE] or not collision(self.x, self.y, 50, 50, cata.getX(), cata.getY(), 50, 50)):
                     cata.fire_catapult(cata.get_progress(), cata.getX(), cata.getY(), cata.get_xdir())
-                    cata.progress = 0
-                    
-            #Walls
-            if (pressed[pg.K_b] and self.y == self.y_ground):
-                build_wall(self.x, self.y, 50)
-                
+                    cata.progress = 0                    
+
             ii = 0
             for i in range(len(self.enemies)):
                 self.enemies[ii].tick()
+                
                 if self.enemies[ii].get_health() <= 0:
                     self.enemies.pop(ii)
                     ii -= 1
@@ -104,6 +101,16 @@ class Game:
                             self.enemies[ii].update_health(-25)
                         kk += 1
                 ii += 1
+            
+            for i in range(len(self.enemies)):
+                for j in range(len(self.walls)):
+                    if collision(self.enemies[i].getX(), self.enemies[i].getY(), 50, 50, self.walls[j].getX(), self.walls[j].getY(), 16, 30):
+                        self.enemies[i].x -= self.enemies[i].x_vel
+                        self.enemies[i].new_vel(0)
+                        self.walls
+                        break
+                    else:
+                        self.enemies[i].new_vel(1)
         
         
         #Waves

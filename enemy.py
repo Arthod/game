@@ -23,3 +23,6 @@ class Enemy:
     
     def update_health(self, diff_health):
         self.health += diff_health
+        
+    def set_vel(self, new_vel):
+        self.x_vel = new_vel
