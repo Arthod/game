@@ -1,12 +1,13 @@
 from ball import Ball
 
 class Catapult:
-    def __init__(self, x, y, progress, xdir):
+    def __init__(self, x, y, progress, xdir, manned):
         self.x = x
         self.y = y
         self.progress = progress
         self.xdir = xdir
         self.balls = []
+        self.manned = 0
         
     def tick(self):
         ii = 0
@@ -32,3 +33,9 @@ class Catapult:
     
     def get_xdir(self):
         return self.xdir
+    
+    def get_manned(self):
+        return self.manned
+    
+    def set_manned(self, new_value):
+        self.manned = new_value

@@ -16,6 +16,7 @@ def draw_game():
         pygame.draw.rect(screen, (30,30,30), pygame.Rect(380, cnvtY(280), 80, 50))
         screen.blit(myfont.render("MENU", 1, (255,255,255)), (400, cnvtY(300)))
     elif game.state == 1:
+        print(game.x, game.y)
         def loadXTranslate(x):
             return x + game.x * (-1) + screen_width/2.0
         def draw_rect(color, x, y, w, h):
@@ -45,7 +46,13 @@ def draw_game():
             
         #Wall
         for wall in game.walls:
+<<<<<<< HEAD
             draw_rect((255, 0, 0), wall.getX(), wall.getY() - 20, 16, 30)
+            draw_rect((255, 0, 0), wall.getX(), wall.getY() - 20, 16, (wall.get_health()/100.0) * 30)
+=======
+            draw_rect((0, 0, 0), wall.getX(), wall.getY() - 20, 16, 30)
+            draw_rect((20, 180, 60), wall.getX(), wall.getY() - 20, 16, (wall.get_health()/100.0) * 30)
+>>>>>>> d2e03f775a47cbe481307695dd5aeeea15ea1b89
             
         #text
         screen.blit(myfont.render("Points: {}".format(game.points), 1, (255,255,0)), (50, cnvtY(550)))
@@ -57,6 +64,9 @@ def draw_game():
         draw_gui_rect((0, 255, 60), -5000, 50, 10000, 50)
         #Player
         draw_rect((10,123,50), game.x, game.y, 50, 50)
+        #Archers
+        for archer in game.archers:
+            draw_rect((125, 125, 50), archer.getX(), archer.getY(), 50, 50)
     elif game.state == 2:
         #Pause
         pygame.draw.rect(screen, (30,30,30), pygame.Rect(380, cnvtY(280), 80, 50))
