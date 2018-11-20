@@ -8,6 +8,7 @@ class Catapult:
         self.xdir = xdir
         self.balls = []
         self.manned = 0
+        self.timer = 20
         
     def tick(self):
         ii = 0
@@ -17,6 +18,8 @@ class Catapult:
                 self.balls.pop(ii)
                 ii -= 1
             ii += 1
+        if self.timer > 0:
+            self.timer -= 1
         
         
     def fire_catapult(self, strength, x, y, xdir):
@@ -39,3 +42,9 @@ class Catapult:
     
     def set_manned(self, new_value):
         self.manned = new_value
+        
+    def ready_to_fire(self):
+        if (self.timer <= 0):
+            return True
+        else:
+            return False

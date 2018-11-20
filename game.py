@@ -106,16 +106,22 @@ class Game:
                     self.unmanned_catapults.append((self.catapult[i].getX(), i))
 
                 self.catapult[i].tick()
-                if (self.catapult[i].get_manned() != 1):
-                    if (self.y == self.catapult[i].getY() and pressed[pg.K_SPACE] and collision(self.x, self.y, 50, 50, self.catapult[i].getX(), self.catapult[i].getY(), 50, 50) and self.catapult[i].get_progress() < 50):
-                        self.catapult[i].progress += 1
-                    if (self.catapult[i].get_progress() > 0) and (not pressed[pg.K_SPACE] or not collision(self.x, self.y, 50, 50, self.catapult[i].getX(), self.catapult[i].getY(), 50, 50)):
-                        self.catapult[i].fire_catapult(self.catapult[i].get_progress(), self.catapult[i].getX(), self.catapult[i].getY(), self.catapult[i].get_xdir())
-                        self.catapult[i].progress = 0
+                if (self.catapult[i].ready_to_fire()):
+                    if (self.catapult[i].get_manned() != 1):
+                        if (self.y == self.catapult[i].getY() and pressed[pg.K_SPACE] and collision(self.x, self.y, 50, 50, self.catapult[i].getX(), self.catapult[i].getY(), 50, 50) and self.catapult[i].get_progress() < 50):
+                            self.catapult[i].progress += 1
+                        if (self.catapult[i].get_progress() > 0) and (not pressed[pg.K_SPACE] or not collision(self.x, self.y, 50, 50, self.catapult[i].getX(), self.catapult[i].getY(), 50, 50)):
+                            self.catapult[i].fire_catapult(self.catapult[i].get_progress(), self.catapult[i].getX(), self.catapult[i].getY(), self.catapult[i].get_xdir())
+                            self.catapult[i].progress = 0
+                            self.catapult[i].timer = 60
+                    else:
+                        if (self.catapult[i].get_progress() > 0):
+                            self.catapult[i].fire_catapult(self.catapult[i].get_progress(), self.catapult[i].getX(), self.catapult[i].getY(), self.catapult[i].get_xdir())
+                            self.catapult[i].progress = 0
+                            self.catapult[i].timer = 60
                 else:
-                    if (self.catapult[i].get_progress() > 0):
-                        self.catapult[i].fire_catapult(self.catapult[i].get_progress(), self.catapult[i].getX(), self.catapult[i].getY(), self.catapult[i].get_xdir())
-                        self.catapult[i].progress = 0
+                    self.catapult[i].progress = 0
+                    
             #Enemies
             ii = 0
             for i in range(len(self.enemies)):
@@ -141,10 +147,10 @@ class Game:
             for i in range(len(self.enemies)):
                 for j in range(len(self.walls)):
                     if collision(self.enemies[i].getX(), self.enemies[i].getY(), 50, 50, self.walls[j].getX(), self.walls[j].getY(), 16, 30):
-                        self.enemies[i].x -= self.enemies[i].x_vel * 20
-                        self.enemies[i].y += -10 * self.enemies[i].get_xdir()
+                        self.enemies[i].x -= self.enemies[i].x_vel * 20 * self.enemies[i].get_xdir()
+                        self.enemies[i].y += 10
                         self.enemies[i].set_vel(1)
-                        self.walls[j].add_health(-10)
+                        self.walls[j].add_health(-5)
                         break
                     else:
                         self.enemies[i].set_vel(0)
@@ -154,7 +160,7 @@ class Game:
             def next_wave():
                 self.wave_number += 1
                 for i in range(self.wave_number):
-                    spawn_enemy(500 + randint(-50, 50), 100, 50)
+                    spawn_enemy(-600 + randint(-50, 50), 100, 50)
             if (len(self.enemies)) == 0:
                 next_wave()
                 
