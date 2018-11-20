@@ -1,7 +1,7 @@
 from ball import Ball
 
 class Catapult:
-    def __init__(self, x, y, progress, xdir, manned):
+    def __init__(self, x, y, progress, xdir):
         self.x = x
         self.y = y
         self.progress = progress

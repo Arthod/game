@@ -16,7 +16,6 @@ def draw_game():
         pygame.draw.rect(screen, (30,30,30), pygame.Rect(380, cnvtY(280), 80, 50))
         screen.blit(myfont.render("MENU", 1, (255,255,255)), (400, cnvtY(300)))
     elif game.state == 1:
-        print(game.x, game.y)
         def loadXTranslate(x):
             return x + game.x * (-1) + screen_width/2.0
         def draw_rect(color, x, y, w, h):
@@ -46,13 +45,8 @@ def draw_game():
             
         #Wall
         for wall in game.walls:
-<<<<<<< HEAD
-            draw_rect((255, 0, 0), wall.getX(), wall.getY() - 20, 16, 30)
-            draw_rect((255, 0, 0), wall.getX(), wall.getY() - 20, 16, (wall.get_health()/100.0) * 30)
-=======
             draw_rect((0, 0, 0), wall.getX(), wall.getY() - 20, 16, 30)
             draw_rect((20, 180, 60), wall.getX(), wall.getY() - 20, 16, (wall.get_health()/100.0) * 30)
->>>>>>> d2e03f775a47cbe481307695dd5aeeea15ea1b89
             
         #text
         screen.blit(myfont.render("Points: {}".format(game.points), 1, (255,255,0)), (50, cnvtY(550)))
@@ -70,7 +64,7 @@ def draw_game():
     elif game.state == 2:
         #Pause
         pygame.draw.rect(screen, (30,30,30), pygame.Rect(380, cnvtY(280), 80, 50))
-        screen.blit(myfont.render("PAUSE", 1, (255,255,255)), (400, cnvtY(300)))
+        screen.blit(myfont.render("PAUSE", 1, (255, 255, 255)), (400, cnvtY(300)))
 
 pygame.init()
 screen = pygame.display.set_mode((screen_width, screen_height))
@@ -92,7 +86,6 @@ while not done:
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             if game.started():
                 game.end_game()
-            else:
                 game.start_game()
     
     pressed = pygame.key.get_pressed()
