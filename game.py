@@ -23,13 +23,10 @@ class Game:
         self.points = 0
         self.y_ground = 100
         
-        self.catapult = [Catapult(-300, self.y_ground, 0, 1, 0), Catapult(300, self.y_ground, 0, -1, 0)]
+        self.catapult = [Catapult(-300, self.y_ground, 0, -1), Catapult(300, self.y_ground, 0, 1)]
         self.enemies = []
         self.walls = [Wall(-360, self.y_ground, 100), Wall(360, self.y_ground, 100)]
-<<<<<<< HEAD
         self.archers = [Archer(-50, self.y_ground), Archer(50, self.y_ground)]
-=======
->>>>>>> d2e03f775a47cbe481307695dd5aeeea15ea1b89
         
         self.grav_acc = 9.82
         self.wave_number = 0
@@ -51,6 +48,31 @@ class Game:
                 return True
             else:
                 return False
+            
+        def dist_to_enemy(x, y, dir):
+            closest_dist = 5000
+            for enemy in self.enemies:
+                if dir == -1:
+                    if enemy.getX() < x:
+                        if closest_dist > x - enemy.getX():
+                            closest_dist = x - enemy.getX()
+                    
+                else:
+                    if enemy.getX() > x:
+                        if closest_dist > enemy.getX() - x:
+                            closest_dist = enemy.getX() - x
+                            
+            if closest_dist == 5000:
+                return -1
+            return closest_dist
+        
+        def get_new_xdir(x):
+            if x > 0:
+                new_xdir = -1
+            else:
+                new_xdir = 1
+            
+            return new_xdir
             
         if self.state == 1:
             #Movement
@@ -82,23 +104,23 @@ class Game:
             for i in range(len(self.catapult)):
                 if self.catapult[i].get_manned() == 0:
                     self.unmanned_catapults.append((self.catapult[i].getX(), i))
-                cata = self.catapult[i]
-                self.catapult[i].tick()
-                if (self.y == cata.getY() and pressed[pg.K_SPACE] and collision(self.x, self.y, 50, 50, cata.getX(), cata.getY(), 50, 50) and cata.get_progress() < 50):
-                    cata.progress += 1
-                if (cata.get_progress() > 0) and (not pressed[pg.K_SPACE] or not collision(self.x, self.y, 50, 50, cata.getX(), cata.getY(), 50, 50)):
-                    cata.fire_catapult(cata.get_progress(), cata.getX(), cata.getY(), cata.get_xdir())
-<<<<<<< HEAD
-                    cata.progress = 0
-                    
-                
-=======
-                    cata.progress = 0                    
 
->>>>>>> d2e03f775a47cbe481307695dd5aeeea15ea1b89
+                self.catapult[i].tick()
+                if (self.catapult[i].get_manned() != 1):
+                    if (self.y == self.catapult[i].getY() and pressed[pg.K_SPACE] and collision(self.x, self.y, 50, 50, self.catapult[i].getX(), self.catapult[i].getY(), 50, 50) and self.catapult[i].get_progress() < 50):
+                        self.catapult[i].progress += 1
+                    if (self.catapult[i].get_progress() > 0) and (not pressed[pg.K_SPACE] or not collision(self.x, self.y, 50, 50, self.catapult[i].getX(), self.catapult[i].getY(), 50, 50)):
+                        self.catapult[i].fire_catapult(self.catapult[i].get_progress(), self.catapult[i].getX(), self.catapult[i].getY(), self.catapult[i].get_xdir())
+                        self.catapult[i].progress = 0
+                else:
+                    if (self.catapult[i].get_progress() > 0):
+                        self.catapult[i].fire_catapult(self.catapult[i].get_progress(), self.catapult[i].getX(), self.catapult[i].getY(), self.catapult[i].get_xdir())
+                        self.catapult[i].progress = 0
+            #Enemies
             ii = 0
             for i in range(len(self.enemies)):
                 self.enemies[ii].tick()
+                self.enemies[ii].set_xdir(get_new_xdir(self.enemies[ii].getX()))
                 
                 if self.enemies[ii].get_health() <= 0:
                     self.enemies.pop(ii)
@@ -119,30 +141,43 @@ class Game:
             for i in range(len(self.enemies)):
                 for j in range(len(self.walls)):
                     if collision(self.enemies[i].getX(), self.enemies[i].getY(), 50, 50, self.walls[j].getX(), self.walls[j].getY(), 16, 30):
-                        self.enemies[i].x -= self.enemies[i].x_vel
-                        self.enemies[i].new_vel(0)
-                        self.walls
+                        self.enemies[i].x -= self.enemies[i].x_vel * 20
+                        self.enemies[i].y += -10 * self.enemies[i].get_xdir()
+                        self.enemies[i].set_vel(1)
+                        self.walls[j].add_health(-10)
                         break
                     else:
-                        self.enemies[i].new_vel(1)
+                        self.enemies[i].set_vel(0)
         
         
             #Waves
             def next_wave():
                 self.wave_number += 1
                 for i in range(self.wave_number):
-                    spawn_enemy(-500 + randint(-50, 50), 100, 50)
+                    spawn_enemy(500 + randint(-50, 50), 100, 50)
             if (len(self.enemies)) == 0:
                 next_wave()
                 
             #Archers
             for i in range(len(self.archers)):
+                closest_enemy_dist = dist_to_enemy(self.archers[i].getX(), self.archers[i].getY(), self.catapult[self.archers[i].manned_the_catapult].get_xdir())
                 self.archers[i].tick(self.unmanned_catapults)
                 if self.archers[i].manning_catapult() == 1:
                     self.catapult[self.unmanned_catapults[0][1]].set_manned(1)
                     self.archers[i].manning = 2
                 if self.archers[i].manning == 2:
-                    self.catapult[self.archers[i].manned_the_catapult].progress += 1
+                    if closest_enemy_dist == -1:
+                        continue
+                    self.catapult[self.archers[i].manned_the_catapult].progress += closest_enemy_dist/6
+                    
+            #Walls
+            ii = 0
+            for i in range(len(self.walls)):
+                if self.walls[ii].get_health() <= 0:
+                    self.walls.pop(ii)
+                    ii -= 1
+                ii += 1
+            
         
                 
     def start_game(self):

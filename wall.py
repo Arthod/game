@@ -12,10 +12,7 @@ class Wall:
         return self.y
     
     def get_health(self):
-<<<<<<< HEAD
-        return self.health
-=======
         return self.health
     
-    
->>>>>>> d2e03f775a47cbe481307695dd5aeeea15ea1b89
+    def add_health(self, value):
+        self.health += value

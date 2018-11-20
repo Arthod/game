@@ -3,7 +3,7 @@ class Ball:
         self.x = pos_x
         self.y = pos_y
         self.y_vel = strength/10.0
-        self.strength = strength/8.0 * xdir
+        self.strength = strength/8.0 * (-xdir)
         
     def tick(self):
         self.x -= self.strength
