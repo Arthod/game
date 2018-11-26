@@ -26,7 +26,7 @@ class Game:
         self.catapult = [Catapult(-300, self.y_ground, 0, -1), Catapult(300, self.y_ground, 0, 1)]
         self.enemies = []
         self.walls = [Wall(-360, self.y_ground, 100), Wall(360, self.y_ground, 100)]
-        self.archers = [Archer(-50, self.y_ground), Archer(50, self.y_ground)]
+        self.archers = []#Archer(-50, self.y_ground), Archer(50, self.y_ground)]
         
         self.grav_acc = 9.82
         self.wave_number = 0
@@ -64,14 +64,14 @@ class Game:
                             
             if closest_dist == 5000:
                 return -1
-            return closest_dist
+            else:
+                return closest_dist
         
         def get_new_xdir(x):
             if x > 0:
                 new_xdir = -1
             else:
                 new_xdir = 1
-            
             return new_xdir
             
         if self.state == 1:
@@ -184,8 +184,6 @@ class Game:
                     ii -= 1
                 ii += 1
             
-        
-                
     def start_game(self):
         if self.state == 0:
             self.state = 1     
